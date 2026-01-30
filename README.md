@@ -29,7 +29,7 @@ The AAI is calculated by comparing the Consumer Price Index (CPI) to average hou
 AAI = (Hourly Earnings Index / CPI) × 100
 ```
 
-An AAI above 0 indicates workers can afford more than the baseline year; below 0 indicates less purchasing power.
+An AAI above 100 indicates workers can afford more than the baseline year; below 100 indicates less purchasing power.
 
 ### Worker Categories
 

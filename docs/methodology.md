@@ -23,9 +23,9 @@ When wages grow faster than prices, time prices fall—meaning workers can affor
 
 The AAI inverts this relationship to create an intuitive index where:
 - Higher values = Greater abundance
-- 0 = Baseline year purchasing power
-- Values above 0 = More purchasing power than baseline
-- Values below 0 = Less purchasing power than baseline
+- 100 = Baseline year purchasing power
+- Values above 100 = More purchasing power than baseline
+- Values below 100 = Less purchasing power than baseline
 
 **AAI Formula:**
 ```
@@ -44,7 +44,6 @@ We query three primary data series from the BLS:
    - Series ID: `CUUR0000SA0`
    - Measures average change in prices paid by urban consumers
    - Seasonally adjusted
-   - Base period: 1982-84 = 100
 
 2. **Average Hourly Earnings - All Private Employees**
    - Series ID: `CES0500000003`

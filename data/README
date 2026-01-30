@@ -1,0 +1,231 @@
+# Data Directory
+
+This directory contains the processed American Abundance Index data files.
+
+---
+
+## Files
+
+### `aai_data_YYYY-MM-DD.xlsx`
+
+Multi-sheet Excel file containing all calculated metrics and time series data.
+
+**Sheet Structure:**
+
+1. **KPI Data** - Summary metrics for dashboard cards
+2. **Bar Chart Data** - Period-over-period percentage changes
+3. **Line Chart Data** - Complete time series for visualization
+4. **Rolling Average Data** - 12-month rolling averages
+5. **Detailed Review** - Full dataset with all intermediate calculations
+
+---
+
+## Sheet Descriptions
+
+### 1. KPI Data
+
+Dashboard summary metrics showing current month and year-over-year changes.
+
+**Columns:**
+- `view` - Worker category (all-workers, blue-collar, upskilling-all, upskilling-blue)
+- `metric` - Metric name (abundance, cpi, wage, timePrice)
+- `monthly` - Last month percentage change
+- `yearly` - Last year percentage change
+- `longTermGrowth` - Since-start change (abundance only)
+
+**Use Case:** Dashboard KPI cards, summary statistics
+
+---
+
+### 2. Bar Chart Data
+
+Percentage changes across different time periods for visualization.
+
+**Columns:**
+- `view` - Worker category
+- `period` - Time period (1-month, 1-year, 5-year, 10-year, inception)
+- `metric` - Metric name (Abundance, Time Price, Wage, CPI)
+- `value` - Percentage change
+
+**Use Case:** Bar charts showing period-over-period comparisons
+
+---
+
+### 3. Line Chart Data
+
+Complete time series of percentage changes from base date.
+
+**Columns:**
+- `view` - Worker category
+- `date` - Date in YYYY-MM format
+- `CPI` - CPI % change from base
+- `Wage` - Wage % change from base
+- `Time_Price` - Time Price % change from base
+- `Abundance` - Abundance % change from base
+
+**Use Case:** Line charts, time series analysis
+
+**Date Range:** March 2006 to present (most recent BLS data)
+
+---
+
+### 4. Rolling Average Data
+
+12-month rolling average growth rates for smoothed visualization.
+
+**Columns:**
+- `view` - Worker category
+- `date` - Date in YYYY-MM format
+- `CPI` - 12-month rolling average CPI growth
+- `Wage` - 12-month rolling average wage growth
+
+**Use Case:** Rolling average chart showing smoothed growth trends
+
+---
+
+### 5. Detailed Review
+
+Comprehensive dataset with all raw values, indices, and calculations.
+
+**Columns:**
+- `Category` - Worker category name
+- `Year`, `Month` - Temporal identifiers
+- `Months_Since_Start` - Counter from base date
+- `CPI`, `Wage` - Raw BLS values
+- `CPI_Index`, `Wage_Index` - Indexed values (base = 100)
+- `Time_Price_Index` - Time Price index
+- `Abundance_Index` - Abundance index (matches contributor's "AAI")
+- `CPI_pct_from_base` - CPI % change from base
+- `Wage_pct_from_base` - Wage % change from base
+- `Time_Price_pct_from_base` - Time Price % change from base
+- `Abundance_pct_from_base` - Abundance % change from base
+
+**Use Case:** 
+- Verification of calculations
+- Deep analysis
+- Reproducing methodology
+- Quality assurance
+
+---
+
+## Data Frequency
+
+- **Update Schedule:** Monthly, following BLS data releases (typically mid-month)
+- **Historical Range:** March 2006 to present
+- **Base Date:** March 2006 (all indices = 0)
+
+---
+
+## Data Quality
+
+### Validation
+
+Each data release is validated against:
+- BLS source data
+- Previous month's values
+- Expected ranges for each metric
+
+### Known Limitations
+
+1. **Missing Months:** Occasionally BLS delays data releases (e.g., October 2025)
+   - Script does not interpolate missing values
+   - Missing months appear as gaps in time series
+   - Monthly changes show `None` when consecutive months unavailable
+
+2. **Revisions:** BLS occasionally revises historical data
+   - New runs incorporate revisions automatically
+   - Compare files across dates to track changes
+
+3. **Seasonal Adjustment:** All series use seasonally adjusted data where available
+
+---
+
+## File Naming Convention
+
+Files are named with the date of the most recent data point:
+```
+aai_data_2025-01-27.xlsx
+```
+
+---
+
+## Using the Data
+
+### Opening in Excel
+
+1. Download the `.xlsx` file
+2. Open in Excel, Google Sheets, or LibreOffice Calc
+3. Navigate between sheets using tabs at bottom
+
+### Reading with Python
+```python
+import pandas as pd
+
+# Read specific sheet
+kpi_data = pd.read_excel('aai_data_YYYY-MM-DD.xlsx', sheet_name='KPI Data') **change excel name to most recent version**
+line_data = pd.read_excel('aai_data_YYYY-MM-DD.xlsx', sheet_name='Line Chart Data')
+
+# Read all sheets
+all_sheets = pd.read_excel('aai_data_YYYY-MM-DD.xlsx', sheet_name=None)
+```
+
+### Reading with R
+```r
+library(readxl)
+
+# Read specific sheet
+kpi_data <- read_excel("aai_data_YYYY-MM-DD.xlsx", sheet = "KPI Data")  **change excel name to most recent version**
+line_data <- read_excel("aai_data_YYYY-MM-DD.xlsx", sheet = "Line Chart Data")
+```
+
+---
+
+## Exporting to CSV
+
+If you need individual CSV files:
+
+1. Open the Excel file
+2. Select the desired sheet
+3. File → Save As → CSV (UTF-8)
+4. Repeat for each sheet needed
+
+**Note:** We provide Excel format to keep all related data together and avoid confusion about which CSV corresponds to which view.
+
+---
+
+## Data Dictionary
+
+For detailed column definitions and calculation methods, see:
+- `docs/data-dictionary.md` - Complete column descriptions
+- `docs/methodology.md` - Calculation methodology
+
+---
+
+## Reproducing the Data
+
+To regenerate the data file:
+
+1. Install dependencies: `pip install -r requirements.txt`
+2. Get a BLS API key: https://data.bls.gov/registrationEngine/
+3. Add key to `src/fetch_and_process_data.py`
+4. Run: `python src/fetch_and_process_data.py`
+
+See `docs/setup-guide.md` for detailed instructions.
+
+---
+
+## Change Log
+
+| Date | Change | Notes |
+|------|--------|-------|
+| 2025-30-27 | Initial release | Data through January 2025 |
+
+---
+
+## Questions?
+
+For questions about the data:
+- See `docs/data-dictionary.md` for column definitions
+- See `docs/methodology.md` for calculation details
+- Open an issue on GitHub for specific questions
+```

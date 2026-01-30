@@ -162,7 +162,7 @@ aai_data_2025-01-27.xlsx
 import pandas as pd
 
 # Read specific sheet
-kpi_data = pd.read_excel('aai_data_YYYY-MM-DD.xlsx', sheet_name='KPI Data') change excel name to most recent version
+kpi_data = pd.read_excel('aai_data_YYYY-MM-DD.xlsx', sheet_name='KPI Data') *change excel name to most recent version*
 line_data = pd.read_excel('aai_data_YYYY-MM-DD.xlsx', sheet_name='Line Chart Data')
 
 # Read all sheets
@@ -174,7 +174,7 @@ all_sheets = pd.read_excel('aai_data_YYYY-MM-DD.xlsx', sheet_name=None)
 library(readxl)
 
 # Read specific sheet
-kpi_data <- read_excel("aai_data_YYYY-MM-DD.xlsx", sheet = "KPI Data")  change excel name to most recent version
+kpi_data <- read_excel("aai_data_YYYY-MM-DD.xlsx", sheet = "KPI Data")  *change excel name to most recent version*
 line_data <- read_excel("aai_data_YYYY-MM-DD.xlsx", sheet = "Line Chart Data")
 ```
 

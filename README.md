@@ -62,22 +62,21 @@ All data comes from the U.S. Bureau of Labor Statistics (BLS) via their public A
 ## Repository Structure
 ```
 american-abundance-index/
-├── README.md                          ← Root level ✅
-├── LICENSE                            ← Root level ✅
-├── .gitignore                         ← Root level ✅
-├── requirements.txt                   ← Root level (adding now)
-├── data/                              ← Folder (adding next)
-│   └── processed/
-│       ├── aai_data_2025-01-27.xlsx
-│       └── README.md
-├── src/                               ← Folder (adding next)
+├── README.md                          
+├── LICENSE                            
+├── .gitignore                         
+├── requirements.txt                  
+├── data/                              
+│   ├── aai_data_2025-01-27.xlsx
+│   └── README.md
+├── src/                               
 │   ├── fetch_and_process_data.py
 │   └── README.md
-├── docs/                              ← Folder (adding next)
+├── docs/                              
 │   ├── methodology.md
 │   ├── data-dictionary.md
 │   └── setup-guide.md
-└── examples/                          ← Folder (adding next)
+└── examples/                         
     ├── visualization_example.html
     └── README.md
 ```

@@ -14,7 +14,7 @@ from datetime import datetime
 # CONFIGURATION
 # ============================================================================
 
-API_KEY = 'your_bls_api_key_here'  # Get free key at https://data.bls.gov/registrationEngine/
+API_KEY = 'f3a1929033e4407296889dfa6f1274b0'  #BLS API key
 SERIES_IDS = {
     'CPI': 'CUUR0000SA0',           # Consumer Price Index
     'ALL_EMPLOYEES': 'CES0500000003',  # Average Hourly Earnings - All Workers
@@ -80,7 +80,30 @@ def fetch_all_series(series_dict, start_year, end_year, api_key):
     combined = combined[combined['date'] >= pd.to_datetime(BASE_DATE)]
     print(f"✓ Fetched {len(combined)} months of data\n")
     return combined
-
+    
+def interpolate_missing_values(df):
+    """Interpolate missing CPI values using linear interpolation between adjacent months"""
+    print("\nChecking for missing values...")
+    
+    # Check each series for missing values
+    for col in ['CPI', 'ALL_EMPLOYEES', 'BLUE_COLLAR', 'ENTRY_LEVEL']:
+        missing_count = df[col].isna().sum()
+        if missing_count > 0:
+            print(f"  {col}: {missing_count} missing values detected")
+            
+            # Use pandas interpolate with linear method
+            # This will use the average of previous and next valid values
+            df[col] = df[col].interpolate(method='linear', limit_direction='both')
+            
+            # Verify interpolation
+            remaining_missing = df[col].isna().sum()
+            if remaining_missing > 0:
+                print(f"    ⚠ Warning: {remaining_missing} values still missing after interpolation")
+            else:
+                print(f"    ✓ Interpolated successfully")
+    
+    print("✓ Missing value check complete\n")
+    return df
 # ============================================================================
 # CALCULATIONS
 # ============================================================================
@@ -568,6 +591,9 @@ def main():
     
     # Fetch data from BLS
     df = fetch_all_series(SERIES_IDS, START_YEAR, CURRENT_YEAR, API_KEY)
+
+    # Interpolate any missing values
+    df = interpolate_missing_values(df)
     
     # Calculate upskilling trajectories
     print("Calculating upskilling trajectories...")

@@ -15,8 +15,9 @@ This directory contains the Python pipeline for fetching BLS data and generating
 The pipeline performs the following operations:
 
 1. **Data Fetching:** Retrieves time series data from the BLS API
-2. **Data Processing:** Calculates indices, percentage changes, and upskilling trajectories
-3. **Data Export:** Generates a multi-sheet Excel file for visualization
+2. **Data Interpolation:** Fills missing values using linear interpolation
+3. **Data Processing:** Calculates indices, percentage changes, and upskilling trajectories
+4. **Data Export:** Generates a multi-sheet Excel file for visualization
 
 ---
 
@@ -78,6 +79,50 @@ Fetches and merges all required BLS series.
 - `api_key` (str): BLS API key
 
 **Returns:** DataFrame with all series merged on date
+
+---
+
+#### Data Interpolation
+```python
+interpolate_missing_values(df)
+```
+Interpolates missing values in BLS data series using linear interpolation.
+
+**Purpose:** BLS occasionally delays data releases (e.g., during government shutdowns or data collection issues). This function fills gaps by averaging the surrounding valid values.
+
+**Method:** 
+- Uses pandas' `interpolate(method='linear')` 
+- For each missing value, calculates: `(previous_value + next_value) / 2`
+- Edge cases use forward/backward fill when no surrounding values exist
+
+**Parameters:**
+- `df` (DataFrame): Raw BLS data with potential missing values
+
+**Returns:** DataFrame with missing values interpolated
+
+**Output:** 
+- Reports which series have missing data
+- Shows the specific months that were interpolated
+- Displays the interpolated values for verification
+- Warns if any values remain missing after interpolation
+
+**Example Console Output:**
+```
+Checking for missing values...
+  CPI: 1 missing value(s) detected
+    Missing months: 2025-10
+    ✓ Interpolated successfully
+      2025-10: 318.456
+  ALL_EMPLOYEES: No missing values
+  BLUE_COLLAR: No missing values
+  ENTRY_LEVEL: No missing values
+✓ Missing value check complete
+```
+
+**Note:** This approach maintains data integrity better than leaving gaps, which would cause:
+- Broken month-over-month calculations
+- Missing data points in visualizations
+- Inconsistent time series
 
 ---
 
@@ -305,19 +350,45 @@ To modify, edit the relevant functions in the Calculations section.
 
 ### Missing Data Handling
 
-- **Interpolation:** Not used - missing months remain as gaps
-- **Monthly Changes:** Only calculated if consecutive months exist
-- **Impact:** Monthly KPI may be `None` if BLS data is delayed
+- **Interpolation:** Linear interpolation used for missing values
+  - Averages the previous and next valid values
+  - Example: If Oct 2025 CPI is missing, uses average of Sep 2025 and Nov 2025
+  - Automatically handles edge cases (start/end of dataset)
+- **Monthly Changes:** Calculated normally after interpolation fills gaps
+- **Transparency:** Console output shows which months were interpolated and their values
+
+### Interpolation Examples
+
+**Scenario 1: Missing middle value**
+- Sep 2025 CPI: 318.2
+- Oct 2025 CPI: Missing → **Interpolated to 318.6**
+- Nov 2025 CPI: 319.0
+- Calculation: (318.2 + 319.0) / 2 = 318.6
+
+**Scenario 2: Missing first value**
+- Mar 2006 CPI: Missing → **Uses Apr 2006 value (backward fill)**
+- Apr 2006 CPI: 201.5
+
+**Scenario 3: Missing last value**
+- Nov 2025 CPI: 319.0
+- Dec 2025 CPI: Missing → **Uses Nov 2025 value (forward fill)**
 
 ### Known Issues
 
-1. **October 2025 CPI:** BLS occasionally delays releases
-   - Script handles gracefully by returning `None` for that month
-   - Does not interpolate or estimate missing values
+1. **Delayed BLS Releases:** 
+   - BLS occasionally delays monthly data releases
+   - Script automatically interpolates missing values
+   - Console output shows which months were filled
 
-2. **Series Updates:** BLS occasionally revises historical data
+2. **Series Updates:** 
+   - BLS occasionally revises historical data
    - Re-running the script captures revisions automatically
    - Compare "Detailed Review" sheet across runs to track changes
+
+3. **Large Gaps:**
+   - If multiple consecutive months are missing, interpolation still works
+   - However, accuracy decreases with larger gaps
+   - Console warns if unusual patterns detected
 
 ---
 
@@ -337,11 +408,14 @@ Rate limit exceeded
 ```
 Solution: Wait before retrying (500 requests/day limit)
 
-**Data Gaps:**
+**Missing Data (Now Handled Automatically):**
 ```
-Warning: Missing data for month YYYY-MM
+Checking for missing values...
+  CPI: 1 missing value(s) detected
+    Missing months: 2025-10
+    ✓ Interpolated successfully
 ```
-Solution: This is normal - BLS may delay releases. Monthly change will be `None`.
+Solution: No action needed - automatically interpolated
 
 ---
 
@@ -373,6 +447,11 @@ After running, check:
 3. **No negative CPI or wages:**
    - All raw CPI and wage values should be positive
 
+4. **Interpolation verification:**
+   - Check console output for interpolated months
+   - Verify interpolated values are reasonable (between surrounding values)
+   - Confirm no remaining missing values after interpolation
+
 ---
 
 ## Contributing
@@ -394,4 +473,4 @@ To contribute improvements:
 - **BLS API Documentation:** https://www.bls.gov/developers/
 - **Time Price Methodology:** Tupy & Pooley, "Superabundance" (2022)
 - **Pandas Documentation:** https://pandas.pydata.org/docs/
-```
+- **Pandas Interpolation:** https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.interpolate.html

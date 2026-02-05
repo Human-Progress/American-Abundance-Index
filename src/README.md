@@ -444,10 +444,7 @@ After running, check:
    - Compare `Abundance_Index` column to expected values
    - Base month (2006-03) should equal 100.00
 
-3. **No negative CPI or wages:**
-   - All raw CPI and wage values should be positive
-
-4. **Interpolation verification:**
+3. **Interpolation verification:**
    - Check console output for interpolated months
    - Verify interpolated values are reasonable (between surrounding values)
    - Confirm no remaining missing values after interpolation

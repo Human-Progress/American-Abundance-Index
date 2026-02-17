@@ -65,10 +65,17 @@ def fetch_all_series(series_dict, start_year, end_year, api_key):
     dfs = []
     for name, series_id in series_dict.items():
         print(f"  {name}...", end=" ")
-        dfs.append(process_bls_series(
-            fetch_bls_series(series_id, start_year, end_year, api_key),
-            name
-        ))
+        # BLS API limits to 20-year spans, so chunk if needed
+        chunks = []
+        for chunk_start in range(start_year, end_year + 1, 20):
+            chunk_end = min(chunk_start + 19, end_year)
+            resp = fetch_bls_series(series_id, chunk_start, chunk_end, api_key)
+            if resp['status'] == 'REQUEST_SUCCEEDED' and resp['Results']['series'][0]['data']:
+                chunks.append(process_bls_series(resp, name))
+        if not chunks:
+            raise Exception(f"No data returned for {name}")
+        combined = pd.concat(chunks, ignore_index=True).drop_duplicates(subset='date').sort_values('date').reset_index(drop=True)
+        dfs.append(combined)
         print("✓")
     
     # Merge all series on date
@@ -80,7 +87,6 @@ def fetch_all_series(series_dict, start_year, end_year, api_key):
     combined = combined[combined['date'] >= pd.to_datetime(BASE_DATE)]
     print(f"✓ Fetched {len(combined)} months of data\n")
     return combined
-    
 def interpolate_missing_values(df):
     """Interpolate missing CPI values using linear interpolation between adjacent months"""
     print("\nChecking for missing values...")

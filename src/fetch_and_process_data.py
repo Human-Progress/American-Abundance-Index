@@ -16,7 +16,7 @@ from datetime import datetime
 
 API_KEY = 'f3a1929033e4407296889dfa6f1274b0'  #BLS API key
 SERIES_IDS = {
-    'CPI': 'CUUR0000SA0',           # Consumer Price Index
+    'CPI': 'CUSR0000SA0',           # Consumer Price Index
     'ALL_EMPLOYEES': 'CES0500000003',  # Average Hourly Earnings - All Workers
     'BLUE_COLLAR': 'CES0500000008',    # Average Hourly Earnings - Blue Collar
     'ENTRY_LEVEL': 'CES7072251303'     # Entry Level Food Service Workers

@@ -14,7 +14,7 @@ from datetime import datetime
 # CONFIGURATION
 # ============================================================================
 
-API_KEY = 'f3a1929033e4407296889dfa6f1274b0'  #BLS API key
+API_KEY = 'ADD KEY'  #BLS API key
 SERIES_IDS = {
     'CPI': 'CUSR0000SA0',           # Consumer Price Index
     'ALL_EMPLOYEES': 'CES0500000003',  # Average Hourly Earnings - All Workers
